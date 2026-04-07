@@ -372,6 +372,16 @@ SELECT EMPLOYEE_ID                     사번,
  WHERE    TO_CHAR( HIRE_DATE, 'DY' ) = '화'
  ORDER BY HIRE_DATE ASC
  ;
+ 
+ -- 화요일 입사자를 출력 - 나혼자 해본거 = 개씹망
+SELECT EMPLOYEE_ID                     사번,
+       FIRST_NAME || ' ' || LAST_NAME  이름,
+       EMAIL                           이메일,
+       HIRE_DATE                       입사년월
+ FROM   EMPLOYEES
+ WHERE  HIRE_DATE > SYSDATE - (7 * NUMBER(900)) - 1
+  AND   HIRE_DATE < SYSDATE - (7 * NUMBER(1)) + 1
+;
 
 -- 입사 후 일주일 이내인 직원명단
 SELECT EMPLOYEE_ID                     사번,
@@ -382,22 +392,14 @@ SELECT EMPLOYEE_ID                     사번,
  WHERE  HIRE_DATE > SYSDATE - 7
 ;
 
--- 화요일 입사자를 출력 - 나혼자 해본거 = 개씹망
-SELECT EMPLOYEE_ID                     사번,
-       FIRST_NAME || ' ' || LAST_NAME  이름,
-       EMAIL                           이메일,
-       HIRE_DATE                       입사년월
- FROM   EMPLOYEES
- WHERE  HIRE_DATE > SYSDATE - (7 * NUMBER(900)) - 1
-  AND   HIRE_DATE < SYSDATE - (7 * NUMBER(1)) + 1
-;
 
 -- 08월 입사자의 사번, 이름, 입사일을 입사일 순으로 정렬
+ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS';
 SELECT EMPLOYEE_ID                     사번,
        FIRST_NAME || ' ' || LAST_NAME  이름,
        HIRE_DATE                       입사년월
  FROM   EMPLOYEES
- WHERE  HIRE_DATE LIKE '__/08/__'
+ WHERE  HIRE_DATE LIKE '____-08%'
  ORDER BY HIRE_DATE ASC
 ;
 
@@ -413,7 +415,20 @@ SELECT EMPLOYEE_ID                     사번,
 
 -- 2026년 04월 07일 10시 05분 04초 오전 수요일
 -- 한자로 출력
-
+ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS';
+SELECT EMPLOYEE_ID                     사번,
+       FIRST_NAME || ' ' || LAST_NAME  이름,
+       HIRE_DATE                       입사년월,
+       TO_CHAR( SYSDATE, 'YYYY' ) || '年'|| ' ' ||
+       TO_CHAR( SYSDATE, 'MM' )   || '月'|| ' ' ||
+       TO_CHAR( SYSDATE, 'DD' )   || '日'|| ' ' ||
+       TO_CHAR( SYSDATE, 'HH24' ) || '時'|| ' ' ||
+       TO_CHAR( SYSDATE, 'MI' )   || '分'|| ' ' ||
+       TO_CHAR( SYSDATE, 'SS' )   || '秒'|| ' ' ||
+       '午後' || ' ' || '火曜日'
+ FROM EMPLOYEES
+ ORDER BY 사번 ASC
+ ;
 
 
 
