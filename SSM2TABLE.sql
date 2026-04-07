@@ -1,0 +1,6 @@
+INSERT INTO MYCLASS 
+ VALUES (8, '윤동재',  'ehdwo1008@naver.com', '010-9848-5936', SYSDATE);
+COMMIT;
+
+DELETE FROM MYCLASS
+ WHERE 이름 ='윤동재';

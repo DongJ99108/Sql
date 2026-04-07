@@ -1,0 +1,11 @@
+CREATE TABLE GREENCOM (
+번호     NUMBER(5)    NOT NULL,
+이름     VARCHAR2(60) NOT NULL,
+이메일   VARCHAR2(320),
+비우기   VARCHAR2(30),
+접속날짜 DATE
+);
+
+INSERT INTO MYCLASS 
+ VALUES (8, '윤동재',  'ehdwo1008@naver.com', '', SYSDATE);
+ COMMIT;
