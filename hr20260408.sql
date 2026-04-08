@@ -387,13 +387,53 @@ SELECT COUNT(*),
  ;
 
 -------------------------------------------------------------------------------------------------------------------------
+부서별 사원수
 
+SELECT     DEPARTMENT_ID          부서번호,
+           COUNT( EMPLOYEE_ID )   사원수
+ FROM      EMPLOYEES
+ -- WHERE
+ GROUP BY  DEPARTMENT_ID 
+ -- HAVING 
+ -- HAVING을 쓰려면 GROUP BY와 무조건 같이있어야함
+ ORDER BY DEPARTMENT_ID
+ 
+ -- ORA-00937: 단일 그룹의 그룹 함수가 아닙니다
+;
 
+-- 부서별 월급합, 월급 평균
+SELECT DEPARTMENT_ID                     부서번호,
+       SUM( SALARY )                     월급,
+       ROUND(AVG( SALARY ), 2 )          월급평균
+ FROM EMPLOYEES
+ GROUP BY DEPARTMENT_ID -- 여기에는 집계함수를 빼야됨
+ ORDER BY DEPARTMENT_ID
+;
 
+-- 부서별 사원수 통계
+SELECT DEPARTMENT_ID                     부서번호,
+       COUNT ( EMPLOYEE_ID )             사원수
+ FROM EMPLOYEES
+ GROUP BY DEPARTMENT_ID
+ ORDER BY DEPARTMENT_ID
+;
 
+-- 부서별 인원수가 5명 이상인 부서번호
+SELECT DEPARTMENT_ID                     부서번호,
+       COUNT( EMPLOYEE_ID )              사원수
+ FROM EMPLOYEES
+ -- WHERE 
+ GROUP BY DEPARTMENT_ID
+ ORDER BY 사원수
+;
 
+-- 부서별 월급 총계가 20000 이상인 부서번호
 
+-- JOB_ID 별 인원수
 
+-- 입사일 기준 월별 인원수, 2017년 기준
+
+-- 부서별 최대 월급이 14000 이상인 부서의 부서번호와 최대월급
 
 
 
