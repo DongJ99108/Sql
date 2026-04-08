@@ -107,6 +107,25 @@ SELECT   SYSDATE,
  -- 년월일시분초   - 年, 月, 日, 時, 分, 秒
  -- 일월화수목금토 - 日, 月, 火, 水, 木, 金, 土
  -- 요일           - 曜日
+SELECT   TO_CHAR( SYSDATE, 'YYYY' ) || '年 ' ||
+         TO_CHAR( SYSDATE, 'MM' )   || '月 ' ||
+         TO_CHAR( SYSDATE, 'DD' )   || '日 ' ||
+         TO_CHAR( SYSDATE, 'HH12' ) || '時 ' ||
+         TO_CHAR( SYSDATE, 'MI' )   || '分 ' ||
+         TO_CHAR( SYSDATE, 'SS' )   || '秒 ' ||
+         CASE TO_CHAR( SYSDATE, 'DY' )
+          WHEN '일' THEN '日'
+          WHEN '월' THEN '月'
+          WHEN '화' THEN '火'
+          WHEN '수' THEN '水'
+          WHEN '목' THEN '木'
+          WHEN '금' THEN '金'
+          WHEN '토' THEN '土'
+         END                        || '曜日 ' ||
+         DECODE( TO_CHAR( SYSDATE, 'AM' ), '오전', '午前'
+                                                   '午後')
+ FROM    DUAL
+ ;
  
  -- 1) TO_CHAR 활용
  SELECT   SYSDATE,
@@ -156,6 +175,10 @@ SELECT   TO_CHAR( SYSDATE, 'AM' ),
                                                    '午後' ) -- 비교할 값이 두개이기 때문에 defalut 값에 午後를 넣어놓음
  FROM    DUAL
  ;
+
+
+
+ 
  -------------------------------------------------------------------------------------------------------------------------
  /*
  10	Administration
@@ -250,8 +273,9 @@ SELECT     EMPLOYEE_ID                                                          
  -------------------------------------------------------------------------------------------------------------------------
  
  -- 집계함수 : AGGREGATE 함수
- -- 모든 집계함수는 NULL 값을 포함하지 않는다. - NULL은 빼고 계산
- -- SUM(), AVG(), MIN(), MAX(), COUNT(), VARIANCE() - 이것들이 집계함수
+ -- 모든 집계함수는 NULL 값을 포함하지 않는다. - NULL은 빼고 계산(만약 NULL로 연산을 할 경우 결과는 무조건 NULL로 나옴)
+ -- SUM(), AVG(), MIN(), MAX(), COUNT(), STDDEV(), VARIANCE() - 이것들이 집계함수
+ -- 합계   평균   최솟값 최댓값 줄수     표준편차  분산
  -- 그룹핑 : GROUP BY
  -- ~별 인원수
  
@@ -303,23 +327,91 @@ SELECT COUNT( DISTINCT DEPARTMENT_ID )
  -- ㄴ NULL값을 포함해서 세고싶으면 NVR을 활용해서 NULL 값을 다른것으로 대체하면 됨(살짝 억지)
  
  
+-- 직원이 근무하는 부서의 수 : 부서장이 있는 부서수 : DEPARTMENTS
+SELECT COUNT( DISTINCT MANAGER_ID )
+ FROM  DEPARTMENTS
+;
+
+SELECT  7 / 2,
+        ROUND(156.456, 2), ROUND(156.456, -2),
+        TRUNC(156.456, 2), TRUNC(156.456, -2)
+ FROM   DUAL
+ ;
+
+-- 직원수, 월급합, 월급평균, 최대월급, 최소월급
+SELECT  COUNT(*)                   직원수,
+        SUM( SALARY )              월급합,
+        ROUND( AVG( SALARY ), 3 )  월급평균,
+        MAX( SALARY )              최대월급,
+        MIN( SALARY )              최소월급
+ FROM   EMPLOYEES
+;
+
+-------------------------------------------------------------------------------------------------------------------------
+
+SQL 문의 실행순서
+1. SELECT
+2. FROM
+3. WHERE
+4. ORDER BY
+
+-------------------------------------------------------------------------------------------------------------------------
+
+-- 부서 60번 부서 인원수, 월급합, 월급평균
+SELECT COUNT(*),
+       SUM( SALARY ),
+       AVG( SALARY )
+ FROM  EMPLOYEES
+ WHERE DEPARTMENT_ID = 60
+ ;
+
+
+-- 부서 50, 60, 80 부서가 아닌 인원수, 월급합, 월급평균
+-- 22	194716	8850.73 - 원래50, 60, 80이 아닌 인원들은 25명이지만 NULL 3명을 제외해서 22명
+SELECT COUNT(*),
+       SUM( SALARY ),
+       ROUND( AVG( SALARY ), 2 )
+ FROM  EMPLOYEES
+ -- WHERE DEPARTMENT_ID != ALL(50, 60, 80)
+ WHERE DEPARTMENT_ID <> 50
+  AND  DEPARTMENT_ID <> 60
+  AND  DEPARTMENT_ID <> 80
+ ;
+
+SELECT COUNT(*),
+       SUM( SALARY ),
+       ROUND( AVG( SALARY ), 2 )
+ FROM  EMPLOYEES
+ WHERE DEPARTMENT_ID != ALL(50, 60, 80)
+ -- WHERE DEPARTMENT_ID NOT IN (50, 60, 80)
+ ;
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
  
  
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+
+
+
 
