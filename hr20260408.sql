@@ -427,9 +427,23 @@ SELECT DEPARTMENT_ID                     부서번호,
  ORDER BY 사원수
 ;
 
--- 부서별 월급 총계가 20000 이상인 부서번호
+-- 부서별 월급 총계가 2000 이상인 부서번호
+SELECT    DEPARTMENT_ID,
+          SUM(SALARY)      월급총계
+ FROM     EMPLOYEES
+ GROUP BY DEPARTMENT_ID
+ HAVING   SUM(SALARY) >= 2000
+ ORDER BY 월급총계
+ ;
 
 -- JOB_ID 별 인원수
+SELECT    JOB_ID,
+          COUNT(*)    인원수
+ FROM     EMPLOYEES
+ GROUP BY JOB_ID
+ -- HAVING
+ ORDER BY 인원수
+ ;
 
 -- 입사일 기준 월별 인원수, 2017년 기준
 
