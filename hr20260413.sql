@@ -107,7 +107,7 @@ IS
  END;
 /
 
-테스트 : 90, 60, 50 - 결과가 한줄이라서 문제없이 출력이 됨 하지만 두명이 되는 순간 to be continue...
+테스트 : 90, 60, 50 - 결과가 한줄이라서 문제없이 출력이 됨 하지만 두명이 되는 순간 콩쥐야 조때써 되는거임
 SET SERVEROUTPUT ON;
 VAR  O_NAME VARCHAR2;
 VAR  O_SAL  NUMBER;
