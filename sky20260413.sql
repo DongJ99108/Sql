@@ -1,7 +1,7 @@
 ---------------------------------------------------------------
 
 DDL : data definition language
- 구조를 생성, 변경 ,제거
+ 구조를 생성(CREATE), 변경(ALTER) ,제거(DROP)
  
  이거는 커밋이나 롤백을 할 수 없다
  
@@ -121,21 +121,120 @@ HR 의 EMPLOYEES TABLE 을 복사해서 SKY 로 가져온다
  5) 일부 칼럼만 복사해서 새로운 테이블 생성
  CREATE TABLE EMP5
   AS
-   SELECT  EMPLOYEE_ID              EMPID,
-   FIRST_NAME || ' ' || LAST_NAME   ENAME,
-   SALARY                           SAL,
-   SALARY * COMMISSION_PCT          BONUS,
-   MANAGER_ID                       MGR,
-   DEPARTMENT_ID                    DEPTID
+   SELECT  EMPLOYEE_ID                      EMPID,
+           FIRST_NAME || ' ' || LAST_NAME   ENAME,
+           SALARY                           SAL,
+           SALARY * COMMISSION_PCT          BONUS,
+           MANAGER_ID                       MGR,
+           DEPARTMENT_ID                    DEPTID
     FROM   HR.EMPLOYEES;
 
 ---------------------------------------------------------------
 
+SELECT * FROM TAB;
 
+-- 테이블을 만드는 또다른 방법
 
+2. SQL DEVELOPER 메뉴에서 TABLE 생성
+    SKT 계정
+     테이블 메뉴클릭 -> 새 테이블 클릭 -> TABLE1 생성 : EMP6
+      EMPID NUMBER(8,2)   NOT NULL PRIMARY KEY
+    , ENAME VARCHAR2(46)  NOT NULL
+    , TEL   VARCHAR2(20)
+    , EMAIL VARCHAR2(320)
 
+3. SCRIPT 로 생성
+CREATE TABLE EMP7
+(
+  EMPID NUMBER(8,2)   NOT NULL 
+, ENAME VARCHAR2(46)  NOT NULL 
+, TEL   VARCHAR2(20)
+, EMAIL VARCHAR2(320)
+, CONSTRAINT EMP7_PK PRIMARY KEY 
+  (
+    EMPID 
+  )
+  ENABLE 
+);
 
+[2] 테이블 제거(DROP) - 영구적으로 구조와 데이터가 제거된다 - 여기엔 휴지통 개념이 없어서 DROP하면 정말 영구적으로 삭제다
 
+ DROP TABLE EMP1;
+  -- DROP 되는 테이블이 부모 테이블일 경우 자식을 먼저 지워야 제거가 가능
+  
+ DROP TABLE EMP1;
+CREATE  TABLE EMP1
+ AS
+  SELECT * FROM EMPLOYEES;
+
+DROP TABLE EMPLOYEES;
+-- ORA-00942: 테이블 또는 뷰가 존재하지 않습니다
+
+테이블이 삭제되지 않는다 : 부모키를 가진 부모테이블은 자식 테이블에 데이터가 있다면
+
+DROP TABLE EMPLOYEES CASCADE; -- 부모자식관계의 데이터를 전체 삭제
+
+[3] 구조변경 (ALTER)
+ 1. 칼럼 추가
+ ALTER TABLE EMP5
+  ADD( LOC VARCHAR2(6) ); -- 추가된 칼럼은 NULL로 채워짐
+ 
+ 2. 칼럼 제거
+  ALTER TABLE EMP5
+   DROP COLUMN LOC;
+ 
+ 3. 테이블 이름 변경 - ORACLE 전용 명령
+  RENAME EMP4 TO NEWEMP;
+ 
+ 4. 칼럼속성변경 -- 크기를 늘려주거나 줄인다
+  ALTER TABLE EMP5
+   MODIFY( ENAME VARCHAR2(60) ); -- 46 -> 60
+   -- 크기를 늘릴때는 몰라도 줄일때 데이터가 날라갈 수 있으니 조심
+   
+--------------------------------------------------------------------------------
+테이블을 생성하고 데이터를 파일에서 가져온다.
+
+CREATE TABLE ZIPCODE
+(
+    ZIPCODE  VARCHAR2(7)             -- 우편번호
+    ,SIDO    VARCHAR2(6)             -- 시도
+    ,GUGUN   VARCHAR2(26)            -- 구군
+    ,DONG    VARCHAR2(78)            -- 읍면동리건물명
+    ,BUNJI   VARCHAR2(26)            -- 번지
+    ,SEQ     NUMBER(5) PRIMARY KEY   -- 일련번호
+);
+
+테이블을 생성 후 ZIPCODE 테이블 선택하고 
+ 오른쪽 마우스버튼
+ -> 데이터 임포트 클릭
+    ZIPCODE_UTF8.csv 선택
+    
+SELECT * FROM ZIPCODE;
+
+SELECT COUNT(*) FROM ZIPCODE;
+
+SELECT COUNT(*) FROM ZIPCODE
+ WHERE SIDO = '부산';
+ 
+-- 시도별 우편번호 갯수
+SELECT   SIDO 시도, COUNT(ZIPCODE) "우편번호 갯수"
+FROM     ZIPCODE
+GROUP BY SIDO
+;
+
+SELECT   COUNT(ZIPCODE), COUNT(DISTINCT ZIPCODE) -- 중복된 것을 제거하니 52144에서 31840까지 줄어듦
+FROM     ZIPCODE
+;
+
+SELECT    '[' || ZIPCODE || ']' || 
+          SIDO  || ' ' || 
+          GUGUN || ' ' ||
+          DONG  || ' ' ||
+          BUNJI || ' ' AS ADDRESS
+ FROM     ZIPCODE
+ WHERE    DONG LIKE '%부전2동%'
+ ORDER BY SEQ ASC
+ ;
 
 
 
