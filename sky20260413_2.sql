@@ -213,14 +213,75 @@ DROP TABLE STUDENT;
 조회
 
 1. 학번, 이름, 점수(국어)
+SELECT    T.STID     학번, 
+          T.STNAME   이름, 
+          C.SUBJECT  과목명, 
+          C.SCORE    "점수(국어)"
+ FROM SCORES C
+  FULL JOIN STUDENT T ON C.STID = T.STID
+ WHERE    C.SUBJECT = '국어'
+ ORDER BY T.STID
+;
 
 2. 학번, 이름, 총점, 평균
+SELECT    T.STID                    학번, 
+          T.STNAME                  이름, 
+          SUM(C.SCORE)              총점, 
+          ROUND( AVG(C.SCORE), 2 )  평균
+ FROM SCORES C
+  FULL JOIN STUDENT T ON C.STID = T.STID
+ GROUP BY T.STID, T.STNAME
+ ORDER BY T.STID
+;
+
 
 3. 모든 학생의 학번, 이름, 총점, 평균
    점수가 NULL인 학생은 '미응시' 처리
+SELECT    T.STID                                                                          학번, 
+          T.STNAME                                                                        이름, 
+          NVL2(SUM(C.SCORE), TO_CHAR(SUM(C.SCORE)), '미응시')                             총점,
+          NVL2(ROUND( AVG(C.SCORE), 2 ), TO_CHAR( ROUND( AVG(C.SCORE), 2 ) ), '미응시' )  평균
+ FROM SCORES C
+  FULL JOIN STUDENT T ON C.STID = T.STID
+ GROUP BY T.STID, T.STNAME
+ ORDER BY T.STID
+;
    
 4. 모든 학생의 학번, 이름, 총점, 평균, 등급, 석차
+SELECT T.STID                                                                         학번, 
+       T.STNAME                                                                       이름, 
+       NVL2(SUM(C.SCORE), TO_CHAR(SUM(C.SCORE)), '미응시')                            총점, 
+       NVL2(ROUND( AVG(C.SCORE), 2 ), TO_CHAR( ROUND( AVG(C.SCORE), 2 ) ), '미응시' ) 평균,
+       CASE 
+        WHEN 90 <= AVG(C.SCORE) AND AVG(C.SCORE) <=  100 THEN 'S'
+        WHEN 80 <= AVG(C.SCORE) AND AVG(C.SCORE)  <   90 THEN 'A'
+        WHEN 70 <= AVG(C.SCORE) AND AVG(C.SCORE)  <   80 THEN 'B'
+        ELSE                                 '노답'
+        END                                                                            등급,
+       RANK() OVER ( ORDER BY AVG(C.SCORE) DESC NULLS LAST )                           석차
+ FROM  SCORES C
+  FULL JOIN STUDENT T ON C.STID = T.STID
+ GROUP BY T.STID, T.STNAME
+ ORDER BY AVG(C.SCORE) DESC NULLS LAST
+;
 
+5. 모든 학생의 학번, 이름, 국어, 영어, 수학, 총점, 평균, 등급, 석차 -- 어떻게 하는거야 슈발
+SELECT T.STID                                                                         학번, 
+       T.STNAME                                                                       이름,
+       NVL2(SUM(C.SCORE), TO_CHAR(SUM(C.SCORE)), '미응시')                            총점, 
+       NVL2(ROUND( AVG(C.SCORE), 2 ), TO_CHAR( ROUND( AVG(C.SCORE), 2 ) ), '미응시' ) 평균,
+       CASE 
+        WHEN 90 <= AVG(C.SCORE) AND AVG(C.SCORE) <=  100 THEN 'S'
+        WHEN 80 <= AVG(C.SCORE) AND AVG(C.SCORE)  <   90 THEN 'A'
+        WHEN 70 <= AVG(C.SCORE) AND AVG(C.SCORE)  <   80 THEN 'B'
+        ELSE                                 '노답'
+        END                                                                            등급,
+        RANK() OVER ( ORDER BY AVG(C.SCORE) DESC NULLS LAST )                          석차
+ FROM  SCORES C
+  FULL JOIN STUDENT T ON C.STID = T.STID
+ GROUP BY T.STID, T.STNAME
+ ORDER BY AVG(C.SCORE) DESC NULLS LAST
+;
 
 
 
