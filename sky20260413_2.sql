@@ -480,12 +480,12 @@ PIVOT
 ;
 2) 학번, 이름, 국어 ,영어, 수학, 총점, 평균, 등급, 석차
 
-SELECT T.STID                                                    학번,
-       T.이름, T.국어 ,T.영어, T.수학, 
+SELECT ST.STID                                                   학번,
+       ST.STNAME 이름, T.국어 ,T.영어, T.수학, 
        (  NVL(T.국어, 0) + NVL(T.영어, 0) + NVL(T.수학, 0) )     총점,
        (  NVL(T.국어, 0) + NVL(T.영어, 0) + NVL(T.수학, 0) ) / 3 평균,
-       -- SG.GRADE                                                등급,
-       RANK() OVER(ORDER BY ( NVL(T.국어, 0), NVL(T.영어, 0), NVL(T.수학, 0) DESC NULLS LAST ) 석차
+       SG.GRADE                                                  등급,
+       RANK() OVER(ORDER BY ( NVL(T.국어, 0) + NVL(T.영어, 0) + NVL(T.수학, 0) ) DESC NULLS LAST ) 석차
  FROM (
  SELECT * FROM (
  SELECT STID, SUBJECT, SCORE
@@ -495,7 +495,7 @@ SELECT T.STID                                                    학번,
  (
   SUM(SCORE)
    FOR SUBJECT
-    IN('국어' AS 국어, '영어' AS 영어, '수학' AS 수학)
+    IN ('국어' AS 국어, '영어' AS 영어, '수학' AS 수학)
 )
 ) T RIGHT JOIN STUDENT    ST ON T.STID = ST.STID
     LEFT JOIN       SCOREGRADE SG 
