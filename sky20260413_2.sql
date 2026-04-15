@@ -22,7 +22,17 @@
   4. CHECK           : 값의 범위지정 , DOMAIN 제약 조건 
   5. FOREIGN KEY     : 외래키 제약조건
   
-  
+
+-- 관계가 설정된 테이블 삭제방법 1
+DROP TABLE SCORES;  -- 자식 테이블을 먼저 삭제해야됨
+DROP TABLE STUDENT; -- 그다음 얘를 지워야 지워짐(부모테이블을 나중에 삭제 해야한다는 뜻)
+
+-- 관계가 설정된 테이블 삭제방법 2
+DROP TABLE STUDENT CASCADE CONSTRAINTS PURGE; -- 순서에 무관하게 삭제 가능
+DROP TABLE SCORES;
+
+
+
  학생     : 학번(PK), 이름,   전화,   입학일
  STUDENT    STID      STNAME  PHONE   INDATE 
 CREATE TABLE STUDENT
@@ -201,8 +211,6 @@ DROP TABLE STUDENT;
 
 --------------------------------------------------------------------------------
 
-
-
 성적처리 TABLE
  업무
  학생 : 학번, 이름, 전화, 입학일
@@ -210,8 +218,12 @@ DROP TABLE STUDENT;
  과목은 변경될 수 있다.
 
 --------------------------------------------------------------------------------
-조회
+학생
+SELECT * FROM STUDENT;
+SELECT * FROM SCORES;
 
+
+조회
 1. 학번, 이름, 점수(국어)
 SELECT    T.STID     학번, 
           T.STNAME   이름, 
@@ -234,6 +246,16 @@ SELECT    T.STID                    학번,
  ORDER BY T.STID
 ;
 
+2. 학번, 이름, 총점, 평균 - TEACHER
+SELECT ST.STID                    학번, 
+       ST.STNAME                  이름, 
+       SUM(SC.SCORE)              총점, 
+       ROUND( AVG(SC.SCORE), 2 )  평균
+ FROM STUDENT ST LEFT JOIN SCORES SC
+  ON  ST.STID = SC.STID
+ GROUP BY ST.STID, ST.STNAME
+ ORDER BY ST.STID ASC
+;
 
 3. 모든 학생의 학번, 이름, 총점, 평균
    점수가 NULL인 학생은 '미응시' 처리
@@ -246,7 +268,41 @@ SELECT    T.STID                                                                
  GROUP BY T.STID, T.STNAME
  ORDER BY T.STID
 ;
-   
+
+3. 모든 학생의 학번, 이름, 총점, 평균
+   점수가 NULL인 학생은 '미응시' 처리 - TEACHER
+SELECT ST.STID                    학번, 
+       ST.STNAME                  이름, 
+       DECODE(SUM(SC.SCORE), NULL, '미응시', SUM(SC.SCORE))   총점, 
+       CASE 
+        WHEN ROUND( AVG(SC.SCORE), 2 ) IS NULL THEN '미응시'
+        ELSE           TO_CHAR( AVG(SC.SCORE), '990.00' )
+        END                                                   평균
+ FROM STUDENT ST LEFT JOIN SCORES SC
+  ON  ST.STID = SC.STID
+ GROUP BY ST.STID, ST.STNAME
+ ORDER BY ST.STID ASC
+;
+SELECT 학번, 이름, 
+       DECODE(총점, NULL, '미응시', TO_CHAR(총점, '990') ),
+       DECODE(평균, NULL, '미응시', TO_CHAR(평균, '990.00') )
+ FROM (
+SELECT ST.STID                    학번, 
+       ST.STNAME                  이름, 
+       SUM(SC.SCORE)              총점, 
+       ROUND( AVG(SC.SCORE), 2 )  평균
+ FROM STUDENT ST LEFT JOIN SCORES SC
+  ON  ST.STID = SC.STID
+ GROUP BY ST.STID, ST.STNAME
+ ORDER BY ST.STID ASC
+)
+;
+
+
+
+
+
+
 4. 모든 학생의 학번, 이름, 총점, 평균, 등급, 석차
 SELECT T.STID                                                                         학번, 
        T.STNAME                                                                       이름, 
